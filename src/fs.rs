@@ -18,8 +18,10 @@ where
 
     if cfg!(target_os = "macos") {
         let file_len = File::open(&from)?.metadata()?.len();
-        let style = ProgressStyle::with_template("[{wide_bar}] {bytes}/{total_bytes}")?
-            .progress_chars("##-");
+        let style = ProgressStyle::with_template(
+            "[{wide_bar}] {bytes_per_sec}   {bytes}/{total_bytes} ({eta})",
+        )?
+        .progress_chars("##-");
         let bar = Rc::new(ProgressBar::new(file_len).with_style(style));
         let b = Rc::clone(&bar);
         crate::macos::fs::copy(&from, &to, move |p| {

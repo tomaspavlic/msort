@@ -26,10 +26,14 @@ pub struct Episode {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct TvShow {}
+
+#[derive(Deserialize, Debug)]
 #[serde(tag = "feature_type")]
 pub enum FeatureDetail {
     Movie(Movie),
     Episode(Episode),
+    Tvshow(TvShow),
 }
 
 #[derive(Deserialize, Debug)]

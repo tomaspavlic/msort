@@ -12,17 +12,17 @@ impl PlexPathGenerator {
 
     pub fn generate(&self, md: MediaType) -> anyhow::Result<PathBuf> {
         match md {
-            MediaType::TvShow(tv_show) => {
+            MediaType::Episode(episode) => {
                 let n = format!(
                     "{} - S{:0>2}E{:0>2} - {}",
-                    tv_show.show_name, tv_show.season, tv_show.episode, tv_show.episode_name
+                    episode.show_name, episode.season, episode.episode, episode.episode_name
                 );
 
                 let p = self
                     .base_dir
                     .join("TV Shows")
-                    .join(&tv_show.show_name)
-                    .join(format!("Season {}", tv_show.season))
+                    .join(&episode.show_name)
+                    .join(format!("Season {}", episode.season))
                     .join(&n);
 
                 Ok(p)

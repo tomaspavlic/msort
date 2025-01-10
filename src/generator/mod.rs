@@ -1,4 +1,5 @@
 use crate::opensubtitles::model::{FeatureDetail, Subtitle};
+use anyhow::bail;
 
 pub mod plex;
 
@@ -15,7 +16,7 @@ pub struct MovieInfo {
 }
 
 pub enum MediaType {
-    TvShow(TvShowInfo),
+    Episode(TvShowInfo),
     Movie(MovieInfo),
 }
 
@@ -28,12 +29,13 @@ impl TryInto<MediaType> for Subtitle {
                 movie_name: movie.title,
                 year: movie.year,
             })),
-            FeatureDetail::Episode(episode) => Ok(MediaType::TvShow(TvShowInfo {
+            FeatureDetail::Episode(episode) => Ok(MediaType::Episode(TvShowInfo {
                 season: episode.season_number,
                 episode: episode.episode_number,
                 episode_name: episode.title,
                 show_name: episode.parent_title,
             })),
+            FeatureDetail::Tvshow(_) => bail!("unsupported media type"),
         }
     }
 }

@@ -28,10 +28,11 @@ impl FileMover {
         let subtitles = self.client.search_by_moviehash(&movie_hash)?;
         let s = subtitles
             .into_iter()
+            .flat_map(|s| s.try_into())
             .next()
             .context("could not find any information for given file")?;
 
-        let mut output_path = self.generator.generate(s.try_into()?)?;
+        let mut output_path = self.generator.generate(s)?;
         output_path.set_extension(input.extension().unwrap_or(OsStr::new("")));
         log::debug!("generated output path = {:?}", &output_path);
 
