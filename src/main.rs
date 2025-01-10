@@ -31,12 +31,6 @@ struct Args {
 }
 
 fn main() -> anyhow::Result<()> {
-    //macos::fs::copy(
-    //    "/Users/tomas/Downloads/docker-27.4.1.tgz",
-    //    "/Users/tomas/Downloads/docker-27.4.1.tgz_b",
-    //    |p| println!("{}", p),
-    //)?;
-
     let args = Args::parse();
     env_logger::builder()
         .filter_level(args.verbose.log_level_filter())
