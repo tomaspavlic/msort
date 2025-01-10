@@ -3,6 +3,7 @@ use anyhow::bail;
 
 pub mod plex;
 
+#[derive(PartialEq, Eq, Hash)]
 pub struct TvShowInfo {
     season: i32,
     episode: i32,
@@ -10,11 +11,13 @@ pub struct TvShowInfo {
     show_name: String,
 }
 
+#[derive(PartialEq, Eq, Hash)]
 pub struct MovieInfo {
     year: u32,
     movie_name: String,
 }
 
+#[derive(PartialEq, Eq, Hash)]
 pub enum MediaType {
     Episode(TvShowInfo),
     Movie(MovieInfo),
