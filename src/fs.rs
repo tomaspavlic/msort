@@ -1,6 +1,11 @@
-use anyhow::{Context, bail};
+use anyhow::Context;
 use indicatif::{ProgressBar, ProgressStyle};
-use std::{fs::File, path::Path, rc::Rc};
+use std::{
+    fs::{self, File},
+    io::ErrorKind,
+    path::Path,
+    rc::Rc,
+};
 
 const PROGRESS_STYLE_TEMPLATE: &str =
     "[{wide_bar}] {bytes_per_sec}   {bytes}/{total_bytes} ({eta})";
@@ -9,18 +14,20 @@ pub fn move_file<P>(from: P, to: P, overwrite: bool) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
 {
-    if !overwrite && std::fs::exists(&to)? {
-        bail!("destination file already exists");
+    if !overwrite && fs::exists(&to)? {
+        anyhow::bail!("destination file already exists");
     }
 
-    std::fs::create_dir_all(&to.as_ref().parent().context("invalid path")?)?;
+    fs::create_dir_all(&to.as_ref().parent().context("invalid path")?)?;
 
-    if let Ok(_) = std::fs::rename(&from, &to) {
-        return Ok(());
+    match fs::rename(&from, &to) {
+        Err(e) if e.kind() == ErrorKind::CrossesDevices => {
+            copy(&from, &to)?;
+            fs::remove_file(from)?;
+        }
+        Err(e) => anyhow::bail!(e),
+        Ok(_) => (),
     }
-
-    copy(&from, &to)?;
-    std::fs::remove_file(from)?;
 
     Ok(())
 }
