@@ -1,7 +1,7 @@
 use crate::{
     fs,
     generator::{MediaType, plex::PlexPathGenerator},
-    opensubtitles::{client::OpenSubtitlesClient, hasher, model::Subtitle},
+    opensubtitles::{client::OpenSubtitlesClient, hasher},
 };
 use anyhow::Context;
 use std::{
@@ -26,8 +26,12 @@ impl FileMover {
         let movie_hash = hasher::compute_moviehash(&input_file)?;
         log::debug!("moviehash = {}", &movie_hash);
 
-        let subtitles = self.client.search_by_moviehash(&movie_hash)?;
-        let s = FileMover::find_most_frequent(subtitles)
+        let media = self
+            .client
+            .search_by_moviehash(&movie_hash)?
+            .into_iter()
+            .flat_map(|s| s.try_into());
+        let s = FileMover::find_most_frequent(media)
             .context("could not find any information for given file")?;
 
         let mut output_path = self.generator.generate(s)?;
@@ -40,14 +44,14 @@ impl FileMover {
         Ok(())
     }
 
-    fn find_most_frequent(subs: Vec<Subtitle>) -> Option<MediaType> {
-        let m = subs
-            .into_iter()
-            .flat_map(|s| s.try_into())
-            .fold(HashMap::new(), |mut acc, s| {
-                acc.entry(s).and_modify(|c| *c += 1).or_insert(1);
-                acc
-            });
+    fn find_most_frequent<I>(media: I) -> Option<MediaType>
+    where
+        I: IntoIterator<Item = MediaType>,
+    {
+        let m = media.into_iter().fold(HashMap::new(), |mut acc, s| {
+            acc.entry(s).and_modify(|c| *c += 1).or_insert(1);
+            acc
+        });
 
         let media_type = m.into_iter().max_by_key(|&(_, count)| count)?.0;
 
