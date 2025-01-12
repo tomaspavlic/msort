@@ -4,7 +4,7 @@ use anyhow::bail;
 pub mod plex;
 
 #[derive(PartialEq, Eq, Hash)]
-pub struct TvShowInfo {
+pub struct Episode {
     season: i32,
     episode: i32,
     episode_name: String,
@@ -12,15 +12,15 @@ pub struct TvShowInfo {
 }
 
 #[derive(PartialEq, Eq, Hash)]
-pub struct MovieInfo {
+pub struct Movie {
     year: u32,
     movie_name: String,
 }
 
 #[derive(PartialEq, Eq, Hash)]
 pub enum MediaType {
-    Episode(TvShowInfo),
-    Movie(MovieInfo),
+    Episode(Episode),
+    Movie(Movie),
 }
 
 impl TryInto<MediaType> for Subtitle {
@@ -28,11 +28,11 @@ impl TryInto<MediaType> for Subtitle {
 
     fn try_into(self) -> Result<MediaType, Self::Error> {
         match self.attributes.feature_details {
-            FeatureDetail::Movie(movie) => Ok(MediaType::Movie(MovieInfo {
+            FeatureDetail::Movie(movie) => Ok(MediaType::Movie(Movie {
                 movie_name: movie.title,
                 year: movie.year,
             })),
-            FeatureDetail::Episode(episode) => Ok(MediaType::Episode(TvShowInfo {
+            FeatureDetail::Episode(episode) => Ok(MediaType::Episode(Episode {
                 season: episode.season_number,
                 episode: episode.episode_number,
                 episode_name: episode.title,

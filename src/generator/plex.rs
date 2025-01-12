@@ -6,8 +6,13 @@ pub struct PlexPathGenerator {
 }
 
 impl PlexPathGenerator {
-    pub fn new(base_dir: PathBuf) -> Self {
-        Self { base_dir }
+    pub fn new<P>(base_dir: P) -> Self
+    where
+        P: Into<PathBuf>,
+    {
+        Self {
+            base_dir: base_dir.into(),
+        }
     }
 
     pub fn generate(&self, md: MediaType) -> anyhow::Result<PathBuf> {
@@ -33,5 +38,39 @@ impl PlexPathGenerator {
                 Ok(p)
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::generator::{Episode, Movie};
+    use std::str::FromStr;
+
+    #[test]
+    fn generate_episode_path_works() {
+        let episode = MediaType::Episode(Episode {
+            season: 1,
+            episode: 2,
+            episode_name: "test".into(),
+            show_name: "House".into(),
+        });
+        let actual = PlexPathGenerator::new("/DATA").generate(episode).unwrap();
+        let expected_path =
+            PathBuf::from_str("/DATA/TV Shows/House/Season 1/House - S01E02 - test").unwrap();
+
+        assert_eq!(actual, expected_path)
+    }
+
+    #[test]
+    fn generate_movie_path_works() {
+        let movie = MediaType::Movie(Movie {
+            year: 2025,
+            movie_name: "test".into(),
+        });
+        let actual = PlexPathGenerator::new("/DATA").generate(movie).unwrap();
+        let expected_path = PathBuf::from_str("/DATA/Movies/test (2025)/test (2025)").unwrap();
+
+        assert_eq!(actual, expected_path)
     }
 }
