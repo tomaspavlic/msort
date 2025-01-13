@@ -1,6 +1,6 @@
 use crate::{
     fs,
-    generator::{MediaType, plex::PlexPathGenerator},
+    generator::{media_type::MediaType, plex::PlexPathGenerator},
     opensubtitles::{client::OpenSubtitlesClient, hasher},
 };
 use anyhow::Context;

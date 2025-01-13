@@ -1,4 +1,4 @@
-use super::MediaType;
+use super::media_type::MediaType;
 use std::path::PathBuf;
 
 pub struct PlexPathGenerator {
@@ -44,7 +44,7 @@ impl PlexPathGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::generator::{Episode, Movie};
+    use crate::generator::media_type::{Episode, Movie};
     use std::str::FromStr;
 
     #[test]
