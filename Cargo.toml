@@ -1,5 +1,12 @@
 [package]
-name = "sublee"
+name = "msort"
+license = "MIT"
+description = "A command line application to sort media files"
+readme = "README.md"
+homepage = "https://github.com/tomaspavlic/msort"
+repository = "https://github.com/tomaspavlic/msort"
+keywords = ["plex", "folders", "sorting", "folder-structure"]
+categories = ["command-line-utilities"]
 version = "0.1.0"
 edition = "2024"
 
