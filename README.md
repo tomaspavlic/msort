@@ -33,6 +33,7 @@ msort --input <source_file_path> --base-dir <destination_directory> --api-key
 - `--input` (required): Path to the media file
 - `--base-dir` (required): Path to the directory where organized files will be saved.
 - `--dry-run`: Preview changes without moving any files.
+- `--overwrite`: Replace existing files in the destination folder.
 - `--verbose`: Enable detailed logging for debugging.
 
 ### Examples

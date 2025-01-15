@@ -1,7 +1,7 @@
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use generator::plex::PlexPathGenerator;
-use mover::FileMover;
+use mover::{FileMover, FileMoverOptions};
 use opensubtitles::{client::OpenSubtitlesClient, hasher};
 use std::path::PathBuf;
 
@@ -22,8 +22,17 @@ struct Args {
     #[arg(short, long)]
     base_dir: PathBuf,
 
+    /// API key for OpenSubtitles integration.
     #[arg(long, env)]
     api_key: String,
+
+    /// Preview changes without moving a file.
+    #[arg(long)]
+    dry_run: bool,
+
+    /// Replace existing files in the destination folder.
+    #[arg(long)]
+    overwrite: bool,
 
     /// Verbosity lebel
     #[command(flatten)]
@@ -38,7 +47,11 @@ fn main() -> anyhow::Result<()> {
 
     let client = OpenSubtitlesClient::new(&args.api_key);
     let plex_generator = PlexPathGenerator::new(args.base_dir);
-    let mover = FileMover::new(client, plex_generator);
+    let options = FileMoverOptions {
+        dry_run: args.dry_run,
+        overwrite: args.overwrite,
+    };
+    let mover = FileMover::new(client, plex_generator, options);
     if let Err(err) = mover.run(args.input) {
         log::error!("{}", err);
     }

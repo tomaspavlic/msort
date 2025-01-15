@@ -13,11 +13,25 @@ use std::{
 pub struct FileMover {
     client: OpenSubtitlesClient,
     generator: PlexPathGenerator,
+    options: FileMoverOptions,
+}
+
+pub struct FileMoverOptions {
+    pub dry_run: bool,
+    pub overwrite: bool,
 }
 
 impl FileMover {
-    pub fn new(client: OpenSubtitlesClient, generator: PlexPathGenerator) -> Self {
-        Self { client, generator }
+    pub fn new(
+        client: OpenSubtitlesClient,
+        generator: PlexPathGenerator,
+        options: FileMoverOptions,
+    ) -> Self {
+        Self {
+            client,
+            generator,
+            options,
+        }
     }
 
     pub fn run(&self, input: PathBuf) -> anyhow::Result<()> {
@@ -39,7 +53,9 @@ impl FileMover {
         log::debug!("generated output path = {:?}", &output_path);
 
         log::info!("moving {:?} to {:?}", input, output_path);
-        fs::move_file(input, output_path, false)?;
+        if !self.options.dry_run {
+            fs::move_file(input, output_path, self.options.overwrite)?;
+        }
 
         Ok(())
     }
