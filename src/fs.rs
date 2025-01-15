@@ -2,7 +2,6 @@ use anyhow::Context;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::{
     fs::{self, File},
-    io::ErrorKind,
     path::Path,
     rc::Rc,
 };
@@ -20,14 +19,12 @@ where
 
     fs::create_dir_all(&to.as_ref().parent().context("invalid path")?)?;
 
-    match fs::rename(&from, &to) {
-        Err(e) if e.kind() == ErrorKind::CrossesDevices => {
-            copy(&from, &to)?;
-            fs::remove_file(from)?;
-        }
-        Err(e) => anyhow::bail!(e),
-        Ok(_) => (),
+    if let Ok(_) = fs::rename(&from, &to) {
+        return Ok(());
     }
+
+    copy(&from, &to)?;
+    fs::remove_file(from)?;
 
     Ok(())
 }

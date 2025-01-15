@@ -1,9 +1,9 @@
 use crate::macos::bind::{
-    _copyfile_state, COPYFILE_ALL, COPYFILE_COPY_DATA, COPYFILE_PROGRESS, COPYFILE_STATE_COPIED,
-    COPYFILE_STATE_STATUS_CB, COPYFILE_STATE_STATUS_CTX, copyfile, copyfile_state_alloc,
-    copyfile_state_get, copyfile_state_set,
+    _copyfile_state, copyfile, copyfile_state_alloc, copyfile_state_get, copyfile_state_set,
+    COPYFILE_ALL, COPYFILE_COPY_DATA, COPYFILE_PROGRESS, COPYFILE_STATE_COPIED,
+    COPYFILE_STATE_STATUS_CB, COPYFILE_STATE_STATUS_CTX,
 };
-use anyhow::{Context, bail};
+use anyhow::{bail, Context};
 use std::{
     ffi::CString,
     os::raw::{c_char, c_int, c_void},
