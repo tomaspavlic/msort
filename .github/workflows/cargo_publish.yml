@@ -20,7 +20,7 @@ jobs:
 
     # Run tests to ensure stability
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test 
 
     # Publish to Cargo
     - name: Publish to crates.io
