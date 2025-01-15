@@ -1,13 +1,5 @@
 use anyhow::Context;
-use indicatif::{ProgressBar, ProgressStyle};
-use std::{
-    fs::{self, File},
-    path::Path,
-    rc::Rc,
-};
-
-const PROGRESS_STYLE_TEMPLATE: &str =
-    "[{wide_bar}] {bytes_per_sec}   {bytes}/{total_bytes} ({eta})";
+use std::{fs, path::Path};
 
 pub fn move_file<P>(from: P, to: P, overwrite: bool) -> anyhow::Result<()>
 where
@@ -35,6 +27,8 @@ where
     P: AsRef<Path>,
 {
     std::fs::copy(&from, to)?;
+
+    Ok(())
 }
 
 #[cfg(target_os = "macos")]
@@ -42,6 +36,13 @@ fn copy<P>(from: P, to: P) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
 {
+    use indicatif::{ProgressBar, ProgressStyle};
+    use std::fs::File;
+    use std::rc::Rc;
+
+    const PROGRESS_STYLE_TEMPLATE: &str =
+        "[{wide_bar}] {bytes_per_sec}   {bytes}/{total_bytes} ({eta})";
+
     let file_len = File::open(&from)?.metadata()?.len();
     let style = ProgressStyle::with_template(PROGRESS_STYLE_TEMPLATE)?.progress_chars("##-");
     let bar = Rc::new(ProgressBar::new(file_len).with_style(style));
