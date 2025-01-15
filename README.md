@@ -14,13 +14,13 @@ msort is a powerful command-line tool designed to organize your movie and TV sho
 ## Installation
 
 ### Requirements
-- Rust programming language installed
+Rust programming language installed. Use the [Rust toolchain installed](https://rustup.rs).
 
 ### Steps
-1. Install the application via `cargo` (Rust's package manager):
-   ```bash
-   cargo install msort
-   ```
+Install the application via `cargo` (Rust's package manager):
+```bash
+cargo install msort
+```
 
 ## Usage
 
@@ -32,6 +32,7 @@ msort --input <source_file_path> --base-dir <destination_directory> --api-key
 ### Options
 - `--input` (required): Path to the media file
 - `--base-dir` (required): Path to the directory where organized files will be saved.
+- `--dry-run`: Preview changes without moving any files.
 - `--verbose`: Enable detailed logging for debugging.
 
 ### Examples
