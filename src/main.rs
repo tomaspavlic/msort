@@ -2,7 +2,7 @@ use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use generator::plex::PlexPathGenerator;
 use mover::{FileMover, FileMoverOptions};
-use opensubtitles::{client::OpenSubtitlesClient, hasher};
+use resolver::OpenSubtitlesMediaResolver;
 use std::path::PathBuf;
 
 mod fs;
@@ -10,6 +10,7 @@ mod generator;
 mod macos;
 mod mover;
 mod opensubtitles;
+mod resolver;
 
 /// Simple program to generate path for given file
 #[derive(Parser, Debug)]
@@ -45,13 +46,13 @@ fn main() -> anyhow::Result<()> {
         .filter_level(args.verbose.log_level_filter())
         .init();
 
-    let client = OpenSubtitlesClient::new(&args.api_key);
+    let resolver = OpenSubtitlesMediaResolver::new(&args.api_key);
     let plex_generator = PlexPathGenerator::new(args.base_dir);
     let options = FileMoverOptions {
         dry_run: args.dry_run,
         overwrite: args.overwrite,
     };
-    let mover = FileMover::new(client, plex_generator, options);
+    let mover = FileMover::new(resolver, plex_generator, options);
     if let Err(err) = mover.run(args.input) {
         log::error!("{}", err);
     }

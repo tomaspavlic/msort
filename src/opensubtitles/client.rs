@@ -1,4 +1,4 @@
-use crate::hasher::MovieHash;
+use crate::opensubtitles::hasher::MovieHash;
 use crate::opensubtitles::model::{Response, Subtitle};
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
@@ -14,10 +14,14 @@ impl OpenSubtitlesClient {
         }
     }
 
-    pub fn search_by_moviehash(&self, moviehash: &MovieHash) -> anyhow::Result<Vec<Subtitle>> {
+    pub fn search<S>(&self, moviehash: &MovieHash, query: S) -> anyhow::Result<Vec<Subtitle>>
+    where
+        S: ToString,
+    {
         let params = [
             ("moviehash", moviehash.to_string()),
-            ("moviehash_match", "only".to_string()),
+            ("moviehash_match", "include".to_string()),
+            ("query", query.to_string()),
         ];
 
         self.make_paged_request(
