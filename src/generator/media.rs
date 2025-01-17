@@ -16,21 +16,21 @@ pub struct Movie {
 }
 
 #[derive(PartialEq, Eq, Hash, Debug)]
-pub enum MediaType {
+pub enum Media {
     Episode(Episode),
     Movie(Movie),
 }
 
-impl TryInto<MediaType> for Subtitle {
+impl TryInto<Media> for Subtitle {
     type Error = anyhow::Error;
 
-    fn try_into(self) -> Result<MediaType, Self::Error> {
+    fn try_into(self) -> Result<Media, Self::Error> {
         match self.attributes.feature_details {
-            FeatureDetail::Movie(movie) => Ok(MediaType::Movie(Movie {
+            FeatureDetail::Movie(movie) => Ok(Media::Movie(Movie {
                 movie_name: movie.title,
                 year: movie.year,
             })),
-            FeatureDetail::Episode(episode) => Ok(MediaType::Episode(Episode {
+            FeatureDetail::Episode(episode) => Ok(Media::Episode(Episode {
                 season: episode.season_number,
                 episode: episode.episode_number,
                 episode_name: episode.title,
@@ -55,7 +55,7 @@ mod tests {
         let attributes = Attributes { feature_details };
         let subtitles = Subtitle { attributes };
         let actual = subtitles.try_into().unwrap();
-        let expected = MediaType::Movie(Movie {
+        let expected = Media::Movie(Movie {
             year: 2025,
             movie_name: "test".into(),
         });
@@ -74,7 +74,7 @@ mod tests {
         let attributes = Attributes { feature_details };
         let subtitles = Subtitle { attributes };
         let actual = subtitles.try_into().unwrap();
-        let expected = MediaType::Episode(Episode {
+        let expected = Media::Episode(Episode {
             episode: 2,
             season: 1,
             show_name: "House".into(),
@@ -89,7 +89,7 @@ mod tests {
         let feature_details = FeatureDetail::Tvshow(crate::opensubtitles::model::TvShow {});
         let attributes = Attributes { feature_details };
         let subtitles = Subtitle { attributes };
-        let actual: Result<MediaType, anyhow::Error> = subtitles.try_into();
+        let actual: Result<Media, anyhow::Error> = subtitles.try_into();
 
         assert!(actual.is_err())
     }

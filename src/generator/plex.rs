@@ -1,4 +1,4 @@
-use super::media_type::MediaType;
+use super::media::Media;
 use std::path::PathBuf;
 
 pub struct PlexPathGenerator {
@@ -15,9 +15,9 @@ impl PlexPathGenerator {
         }
     }
 
-    pub fn generate(&self, md: MediaType) -> anyhow::Result<PathBuf> {
+    pub fn generate(&self, md: Media) -> anyhow::Result<PathBuf> {
         match md {
-            MediaType::Episode(episode) => {
+            Media::Episode(episode) => {
                 let n = format!(
                     "{} - S{:0>2}E{:0>2} - {}",
                     episode.show_name, episode.season, episode.episode, episode.episode_name
@@ -32,7 +32,7 @@ impl PlexPathGenerator {
 
                 Ok(p)
             }
-            MediaType::Movie(movie) => {
+            Media::Movie(movie) => {
                 let n = format!("{} ({})", movie.movie_name, movie.year);
                 let p = self.base_dir.join("Movies").join(&n).join(&n);
                 Ok(p)
@@ -49,7 +49,7 @@ mod tests {
 
     #[test]
     fn generate_episode_path_works() {
-        let episode = MediaType::Episode(Episode {
+        let episode = Media::Episode(Episode {
             season: 1,
             episode: 2,
             episode_name: "test".into(),
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn generate_movie_path_works() {
-        let movie = MediaType::Movie(Movie {
+        let movie = Media::Movie(Movie {
             year: 2025,
             movie_name: "test".into(),
         });

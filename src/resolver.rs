@@ -1,12 +1,12 @@
 use crate::{
-    generator::media_type::MediaType,
+    generator::media::Media,
     opensubtitles::{client::OpenSubtitlesClient, hasher},
 };
 use anyhow::Context;
 use std::{collections::HashMap, path::Path};
 
 pub trait MediaResolver {
-    fn resolve(&self, path: &Path) -> anyhow::Result<MediaType>;
+    fn resolve(&self, path: &Path) -> anyhow::Result<Media>;
 }
 
 pub struct OpenSubtitlesMediaResolver {
@@ -21,7 +21,7 @@ impl OpenSubtitlesMediaResolver {
 }
 
 impl MediaResolver for OpenSubtitlesMediaResolver {
-    fn resolve(&self, input: &Path) -> anyhow::Result<MediaType> {
+    fn resolve(&self, input: &Path) -> anyhow::Result<Media> {
         let input_file = Path::new(&input);
         let movie_hash = hasher::compute_moviehash(&input_file)?;
         log::debug!("moviehash = {}", &movie_hash);
@@ -44,9 +44,9 @@ impl MediaResolver for OpenSubtitlesMediaResolver {
     }
 }
 
-fn find_most_frequent<I>(media: I) -> Option<MediaType>
+fn find_most_frequent<I>(media: I) -> Option<Media>
 where
-    I: IntoIterator<Item = MediaType>,
+    I: IntoIterator<Item = Media>,
 {
     let m = media.into_iter().fold(HashMap::new(), |mut acc, s| {
         acc.entry(s).and_modify(|c| *c += 1).or_insert(1);
