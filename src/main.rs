@@ -11,6 +11,7 @@ mod macos;
 mod mover;
 mod opensubtitles;
 mod resolver;
+mod windows;
 
 /// Simple program to generate path for given file
 #[derive(Parser, Debug)]
