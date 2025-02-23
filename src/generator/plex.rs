@@ -44,7 +44,7 @@ impl PlexPathGenerator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::generator::media_type::{Episode, Movie};
+    use crate::generator::media::{Episode, Movie};
     use std::str::FromStr;
 
     #[test]
