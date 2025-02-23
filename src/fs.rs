@@ -21,7 +21,7 @@ where
     Ok(())
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn copy<P>(from: P, to: P) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
@@ -31,11 +31,15 @@ where
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "windows"))]
 fn copy<P>(from: P, to: P) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
 {
+    #[cfg(target_os = "macos")]
+    use crate::macos::fs::copy;
+    #[cfg(target_os = "windows")]
+    use crate::windows::fs::copy;
     use indicatif::{ProgressBar, ProgressStyle};
     use std::fs::File;
     use std::rc::Rc;
@@ -47,7 +51,7 @@ where
     let style = ProgressStyle::with_template(PROGRESS_STYLE_TEMPLATE)?.progress_chars("##-");
     let bar = Rc::new(ProgressBar::new(file_len).with_style(style));
     let bar_clone = Rc::clone(&bar);
-    crate::macos::fs::copy(&from, &to, move |p| {
+    copy(&from, &to, move |p| {
         bar_clone.set_position(p as u64);
     })?;
     bar.finish_and_clear();
