@@ -1,11 +1,14 @@
 use crate::opensubtitles::hasher::MovieHash;
 use crate::opensubtitles::model::{Response, Subtitle};
+use clap::{crate_name, crate_version};
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
 
 pub struct OpenSubtitlesClient {
     api_key: String,
 }
+
+static APP_NAME: &str = concat!(crate_name!(), " ", "v", crate_version!());
 
 impl OpenSubtitlesClient {
     pub fn new(api_key: impl ToString) -> Self {
@@ -46,7 +49,7 @@ impl OpenSubtitlesClient {
             let response = reqwest::blocking::Client::new()
                 .get(url.clone())
                 .header("Api-Key", &self.api_key)
-                .header("User-Agent", "")
+                .header("User-Agent", APP_NAME)
                 .send()?
                 .error_for_status()?
                 .json::<Response<T>>()?;

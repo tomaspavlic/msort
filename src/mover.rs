@@ -31,7 +31,7 @@ impl FileMover {
         let s = self
             .resolver
             .resolve(&input)
-            .context("could not find any information for given file")?;
+            .context("failed getting information about the file")?;
 
         let mut output_path = self.generator.generate(s)?;
         output_path.set_extension(input.extension().unwrap_or(OsStr::new("")));

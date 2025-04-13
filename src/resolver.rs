@@ -23,7 +23,7 @@ impl OpenSubtitlesMediaResolver {
 impl MediaResolver for OpenSubtitlesMediaResolver {
     fn resolve(&self, input: &Path) -> anyhow::Result<Media> {
         let input_file = Path::new(&input);
-        let movie_hash = hasher::compute_moviehash(&input_file)?;
+        let movie_hash = hasher::compute_moviehash(input_file)?;
         log::debug!("moviehash = {}", &movie_hash);
         let file_name = input
             .file_name()
