@@ -1,17 +1,17 @@
 use anyhow::Context;
 use std::{fs, path::Path};
 
-pub fn move_file<P>(from: P, to: P, overwrite: bool) -> anyhow::Result<()>
+pub fn move_file<P>(from: &P, to: &P, overwrite: bool) -> anyhow::Result<()>
 where
     P: AsRef<Path>,
 {
-    if !overwrite && fs::exists(&to)? {
+    if !overwrite && fs::exists(to)? {
         anyhow::bail!("destination file already exists");
     }
 
-    fs::create_dir_all(&to.as_ref().parent().context("invalid path")?)?;
+    fs::create_dir_all(to.as_ref().parent().context("invalid path")?)?;
 
-    if let Ok(_) = fs::rename(&from, &to) {
+    if fs::rename(from, to).is_ok() {
         return Ok(());
     }
 

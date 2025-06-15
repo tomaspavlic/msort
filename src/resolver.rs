@@ -37,8 +37,7 @@ impl MediaResolver for OpenSubtitlesMediaResolver {
             .into_iter()
             .flat_map(|s| s.try_into());
 
-        let media = find_most_frequent(subtitles)
-            .context("could not find any information about the file")?;
+        let media = find_most_frequent(subtitles).context("no information found")?;
 
         Ok(media)
     }

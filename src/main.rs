@@ -54,8 +54,8 @@ fn main() -> anyhow::Result<()> {
         overwrite: args.overwrite,
     };
     let mover = FileMover::new(resolver, plex_generator, options);
-    if let Err(err) = mover.run(args.input) {
-        log::error!("{}", err);
+    if let Err(err) = mover.run(&args.input) {
+        log::error!("failed processing {:?}: {}", args.input, err);
     }
 
     Ok(())

@@ -1,5 +1,4 @@
 use crate::{fs, generator::plex::PlexPathGenerator, resolver::MediaResolver};
-use anyhow::Context;
 use std::{ffi::OsStr, path::PathBuf};
 
 pub struct FileMover {
@@ -26,20 +25,17 @@ impl FileMover {
         }
     }
 
-    pub fn run(&self, input: PathBuf) -> anyhow::Result<()> {
+    pub fn run(&self, input: &PathBuf) -> anyhow::Result<()> {
         log::debug!("processing input file = {:?}", &input);
-        let s = self
-            .resolver
-            .resolve(&input)
-            .context("failed getting information about the file")?;
 
-        let mut output_path = self.generator.generate(s)?;
+        let media = self.resolver.resolve(input)?;
+        let mut output_path = self.generator.generate(media)?;
         output_path.set_extension(input.extension().unwrap_or(OsStr::new("")));
         log::debug!("generated output path = {:?}", &output_path);
 
         log::info!("moving {:?} to {:?}", input, output_path);
         if !self.options.dry_run {
-            fs::move_file(input, output_path, self.options.overwrite)?;
+            fs::move_file(input, &output_path, self.options.overwrite)?;
         }
 
         Ok(())
