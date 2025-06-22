@@ -1,13 +1,11 @@
+use super::MediaResolver;
 use crate::{
+    args::RootArgs,
     generator::media::Media,
     opensubtitles::{client::OpenSubtitlesClient, hasher},
 };
 use anyhow::Context;
 use std::{collections::HashMap, path::Path};
-
-pub trait MediaResolver {
-    fn resolve(&self, path: &Path) -> anyhow::Result<Media>;
-}
 
 pub struct OpenSubtitlesMediaResolver {
     client: OpenSubtitlesClient,
@@ -18,10 +16,14 @@ impl OpenSubtitlesMediaResolver {
         let client = OpenSubtitlesClient::new(api_key);
         Self { client }
     }
+
+    pub fn from_args(args: &RootArgs) -> Option<Self> {
+        Some(Self::new(args.resolvers.opensubtitles_api_key.as_ref()?))
+    }
 }
 
 impl MediaResolver for OpenSubtitlesMediaResolver {
-    fn resolve(&self, input: &Path) -> anyhow::Result<Media> {
+    fn resolve(&self, input: &Path) -> anyhow::Result<Option<Media>> {
         let input_file = Path::new(&input);
         let movie_hash = hasher::compute_moviehash(input_file)?;
         log::debug!("moviehash = {}", &movie_hash);
@@ -37,9 +39,13 @@ impl MediaResolver for OpenSubtitlesMediaResolver {
             .into_iter()
             .flat_map(|s| s.try_into());
 
-        let media = find_most_frequent(subtitles).context("no information found")?;
+        let media = find_most_frequent(subtitles);
 
         Ok(media)
+    }
+
+    fn name(&self) -> &'static str {
+        "opensubtitles"
     }
 }
 

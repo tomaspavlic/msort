@@ -1,7 +1,10 @@
 use crate::opensubtitles::model::{FeatureDetail, Subtitle};
 use anyhow::bail;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct Episode {
     pub season: i32,
     pub episode: i32,
@@ -9,13 +12,14 @@ pub struct Episode {
     pub show_name: String,
 }
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 pub struct Movie {
     pub year: u32,
     pub movie_name: String,
 }
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize, JsonSchema)]
 pub enum Media {
     Episode(Episode),
     Movie(Movie),
