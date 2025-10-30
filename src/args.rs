@@ -1,4 +1,4 @@
-use clap::{Args, Parser};
+use clap::{Args, Parser, ValueEnum};
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use std::path::PathBuf;
 
@@ -50,6 +50,13 @@ pub struct ResolverArgs {
     pub opensubtitles_api_key: Option<String>,
 }
 
+#[derive(ValueEnum, Debug, Clone, PartialEq)]
+pub enum Resolver {
+    All,
+    OpenAI,
+    OpenSubtitles,
+}
+
 /// Simple program to generate path for given file
 #[derive(Parser, Debug)]
 pub struct RootArgs {
@@ -75,4 +82,8 @@ pub struct RootArgs {
     /// Verbosity lebel
     #[command(flatten)]
     pub verbose: Verbosity<InfoLevel>,
+
+    /// Resolver used to lookup information about the media.
+    #[arg(long, value_enum, default_value_t = Resolver::All)]
+    pub resolver: Resolver,
 }

@@ -1,3 +1,5 @@
+use std::any::type_name;
+
 use super::MediaResolver;
 use crate::generator::media::Media;
 
@@ -11,9 +13,13 @@ pub struct MultiResolverBuilder {
 }
 
 impl MultiResolverBuilder {
-    pub fn add(mut self, resolver: Option<impl MediaResolver + 'static>) -> Self {
+    pub fn add<T: MediaResolver + 'static>(mut self, resolver: Option<T>) -> Self {
+        let resolver_name = type_name::<T>().rsplit("::").next().unwrap();
         if let Some(r) = resolver {
             self.resolvers.push(Box::new(r));
+            log::debug!("Resolver {:?} registered.", &resolver_name);
+        } else {
+            log::debug!("Resolver {:?} not registered.", &resolver_name);
         }
 
         self

@@ -1,5 +1,9 @@
 use super::MediaResolver;
-use crate::{args::RootArgs, generator::media::Media, openai::client::Client};
+use crate::{
+    args::{Resolver, RootArgs},
+    generator::media::Media,
+    openai::client::Client,
+};
 use anyhow::Context;
 
 pub struct OpenAiMediaResolver {
@@ -13,6 +17,10 @@ impl OpenAiMediaResolver {
     }
 
     pub fn from_args(args: &RootArgs) -> Option<OpenAiMediaResolver> {
+        if !(Resolver::All == args.resolver || Resolver::OpenAI == args.resolver) {
+            return None;
+        }
+
         let openai_resolver = OpenAiMediaResolver::new(
             args.resolvers.openai_instance_name.as_ref()?.as_str(),
             args.resolvers.openai_deployment_name.as_ref()?.as_str(),

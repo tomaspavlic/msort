@@ -1,6 +1,6 @@
 use super::MediaResolver;
 use crate::{
-    args::RootArgs,
+    args::{Resolver, RootArgs},
     generator::media::Media,
     opensubtitles::{client::OpenSubtitlesClient, hasher},
 };
@@ -18,6 +18,10 @@ impl OpenSubtitlesMediaResolver {
     }
 
     pub fn from_args(args: &RootArgs) -> Option<Self> {
+        if !(Resolver::All == args.resolver || Resolver::OpenSubtitles == args.resolver) {
+            return None;
+        }
+
         Some(Self::new(args.resolvers.opensubtitles_api_key.as_ref()?))
     }
 }
